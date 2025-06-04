@@ -72,6 +72,8 @@ import json
 
 import Open3Edatapoints
 
+import SimulationDataController
+from DictionaryWriteOverlay import DictionaryWriteOverlay
 
 filters = []
 channel = 'vcan0'
@@ -95,6 +97,22 @@ dicEcus = {}  # addr:[dataIdentifiers,dicSimulData]
 
 dyndata = {}
 
+# web server to access virtual data of ecus
+web_server = None
+
+def start_web_server():
+    global web_server
+    web_server = SimulationDataController.run(port=8000, ecus=dicEcus)
+
+def stop_web_server():
+    global web_server
+    if web_server:
+        print("Stopping web server...")
+        # TODO: does this stop the thread?
+        web_server.shutdown()
+        web_server.server_close()
+        print("Web server stopped.")
+
 
 # read simulation data ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def readsim(file):
@@ -113,7 +131,7 @@ def readsim(file):
             data = bytes.fromhex(buffer[1])
             dicdata[did]=data
 
-    return dicdata
+    return DictionaryWriteOverlay(dicdata)
 
 
 def make_ecu(addr:int, dev:str, simdata:str) -> list:
@@ -352,6 +370,7 @@ parser.add_argument("-dyn", "--dyn", action='store_true' , help="-dyn for dynami
 parser.add_argument("-a", "--all", action='store_true', help="respond to all COB-IDs")
 parser.add_argument("-addr", "--addr", type=int, help="ECU address")
 parser.add_argument("-cnfg", "--config", type=str, help="json configuration file")
+parser.add_argument("-w", "--web", action="store_true", help="start a web server to access ecu simulation data")
 args = parser.parse_args()
 
 if(args.can != None):
@@ -439,6 +458,9 @@ for addr,ecu in dicEcus.items():
         for did in ecu[0]:
             ecu[1][did] = getTxData(ecu, did, init=True)
 
+if(args.web):
+    start_web_server()
+
 print("ready to go.")
 
 # main loop ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -497,6 +519,7 @@ try:
 except (KeyboardInterrupt, InterruptedError):
     # got <STRG-C> or SIGINT (<kill -s SIGINT pid>)
     #pass
+    stop_web_server()
     print(" done")
                         
                         
