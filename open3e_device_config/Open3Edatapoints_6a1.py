@@ -1,5 +1,5 @@
-import open3e.Open3Ecodecs
-from open3e.Open3Ecodecs import *
+import Open3Ecodecs
+from Open3Ecodecs import *
 
 dataIdentifiers = {
     "name": "EMCUMASTER",
@@ -10,8 +10,6 @@ dataIdentifiers = {
         382 : None,
         505 : None,
         507 : None,
-        592 : None,
-        604 : None,
         2214 : None,
     }
 }

@@ -15,6 +15,9 @@
 """
 
 """
+version 1.1.0:
+    added support for path to devices specified in devices.json
+
 version 1.0.3:
     more issues regarding multi ECU fixed
 
@@ -68,6 +71,7 @@ import threading
 import random
 import importlib
 import os
+import sys
 import json
 
 import Open3Edatapoints
@@ -133,20 +137,36 @@ def readsim(file):
 
     return DictionaryWriteOverlay(dicdata)
 
+# import arbitrary python files as modules
+def import_path(path):
+    module_name = os.path.basename(path).replace('-', '_').replace('.py', '')
+    spec = importlib.util.spec_from_loader(
+        module_name,
+        importlib.machinery.SourceFileLoader(module_name, path)
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    sys.modules[module_name] = module
+    return module
 
 def make_ecu(addr:int, dev:str, simdata:str) -> list:
     dids = {}
     sims = {}
     if(dev != None):
         if('.py' in dev):
+            didmoduledev = import_path(dev)
             module_name = dev.replace('.py', '')
         else:
             module_name = "Open3Edatapoints" + dev.capitalize()
+            didmoduledev = importlib.import_module(module_name)
         # load datapoints for selected device
-        didmoduledev = importlib.import_module(module_name)
         dids = didmoduledev.dataIdentifiers["dids"]
+    # simdata will be read from same path as device module:
+    path = os.path.dirname(module_name)
+    if path > '':
+        path += '/'
     if(simdata != None):    
-        sims = readsim(simdata)
+        sims = readsim(path+simdata)
     return [dids,sims]
 
 

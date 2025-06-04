@@ -1,12 +1,12 @@
 {
   "vcal": {
     "tx": "0x680",
-    "dpList": "Open3Edatapoints_680.py",
+    "dpList": "open3e_device_config/Open3Edatapoints_680.py",
     "prop": "HPMUMASTER"
   },
   "vx3": {
     "tx": "0x6a1",
-    "dpList": "Open3Edatapoints_6a1.py",
+    "dpList": "open3e_device_config/Open3Edatapoints_6a1.py",
     "prop": "EMCUMASTER"
   }
 }
