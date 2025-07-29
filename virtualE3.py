@@ -15,6 +15,9 @@
 """
 
 """
+version 1.1.0:
+    Send several Frame Control frames (FCf) on write requests with more than 'max_FCrx' frames
+
 version 1.0.3:
     more issues regarding multi ECU fixed
 
@@ -78,6 +81,9 @@ channel = 'vcan0'
 txdata = bytes()
 rxdata = bytes()
 wrdid = 0
+cnt_FCrx = 0
+max_FCrx = 6    # send new FC frame after every x data frames
+
 
 # RDBI multi frame control 
 multiptr = 0
@@ -267,11 +273,11 @@ def sendRemainReadData(msg):
     # done
     comstate = 0
 
-
 def wdbiRequestReceived(ecu, did, msg):
     global comstate
     global rxdata
     global wrdid
+    global cnt_FCrx
 
     # TODO? check formal
 
@@ -296,13 +302,14 @@ def wdbiRequestReceived(ecu, did, msg):
         to = dlen * 0.015  # 15ms/byte
         if(to < 1.0): to = 1.0
         # send FC
-        buffer = bytes([0x30, 0x00, 0x50]) + bytes([0x55] * 5)
+        buffer = bytes([0x30, max_FCrx, 0x50]) + bytes([0x55] * 5)
         txmsg = can.Message(
             arbitration_id=msg.arbitration_id + 0x10,
             data=buffer,
             is_extended_id=False
         )
         bus.send(txmsg)
+        cnt_FCrx = max_FCrx
         comstate = 2
         startToutTimer(to)
 
@@ -312,6 +319,7 @@ def receiveRemainWriteData(ecu, msg):
     global multipci
     global rxdata
     global wrdid
+    global cnt_FCrx
    
     multipci += 1
     if(multipci > 0x2F):
@@ -337,7 +345,20 @@ def receiveRemainWriteData(ecu, msg):
         )
         bus.send(txmsg)
         comstate = 0
-        
+        return
+    
+    cnt_FCrx -= 1
+    if cnt_FCrx == 0:
+        # send again FC
+        buffer = bytes([0x30, max_FCrx, 0x50]) + bytes([0x55] * 5)
+        txmsg = can.Message(
+            arbitration_id=msg.arbitration_id + 0x10,
+            data=buffer,
+            is_extended_id=False
+        )
+        bus.send(txmsg)
+        cnt_FCrx = max_FCrx
+    
 
 # ++++++++++++++++++++++++++
 # main
