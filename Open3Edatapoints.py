@@ -37,6 +37,7 @@ dataIdentifiers = {
         604 : O3EComplexType(76, "GatewayApDataSet", [O3EUtf8(32, "SSID_AccessPoint"), O3EUtf8(40, "Password_AccessPoint"), O3EIp4Addr(4, "IP-Address_AccessPoint")]),
         691 : O3EList(57, "DomesticHotWaterTimeScheduleMonday",[O3EByteVal(1, "Count"), O3EComplexType(7, "Schedules",[O3EStime(2, "Start"),O3EStime(2, "Stop"), RawCodec(2, "Unknown"), O3EByteVal(1, "Mode")])]),
         692 : O3EList(57, "DomesticHotWaterTimeScheduleTuesday",[O3EByteVal(1, "Count"), O3EComplexType(7, "Schedules",[O3EStime(2, "Start"),O3EStime(2, "Stop"), RawCodec(2, "Unknown"), O3EByteVal(1, "Mode")])]),
+        875 : O3EStime(2, "LegionellaProtectionStartTime"),
         1006 : O3EComplexType(4, "TargetQuickMode", [O3EByteVal(1, "OpMode"), O3EBool(1, "Required"), RawCodec(2, "Unknown")]), # MyHomeMyData, ref. https://community.viessmann.de/viessmann/attachments/viessmann/customers-heatpump-hybrid/74546/1/6196307%20Kundendatenpunktliste%20Vitocal%20(1).pdf
         1007 : O3EComplexType(4, "CurrentQuickMode", [O3EByteVal(1, "OpMode"), O3EBool(1, "Required"), RawCodec(2, "Unknown")]), # MyHomeMyData, ref. did 1006
         1097 : O3EComplexType(20, "ElectricityPrice", [RawCodec(4, "Unknown1"), RawCodec(4, "Unknown2"), O3EInt32(4, "NormalRate", scale=100), O3EInt32(4, "LowRate", scale = 100), RawCodec(4, "Unknown3")]), # Unit ct
