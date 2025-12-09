@@ -84,9 +84,6 @@ import json
 # set version:
 version_str = '1.2.0 - opem3e-integration-testing'
 
-# Path to common data point definitions
-dids_common_path = 'open3e_device_config/Open3Edatapoints.py'
-
 import SimulationDataController
 from DictionaryWriteOverlay import DictionaryWriteOverlay
 
@@ -411,9 +408,6 @@ parser.add_argument("-cnfg", "--config", type=str, help="json configuration file
 parser.add_argument("-w", "--web", action="store_true", help="start a web server to access ecu simulation data")
 args = parser.parse_args()
 
-# Load common dids from local sub folder
-dids_common_module = import_path(dids_common_path)
-commondids = dids_common_module.dataIdentifiers["dids"]
 
 if(args.can != None):
     channel = args.can
@@ -436,16 +430,23 @@ if(args.config != None):
         devjson = json.load(file)
     # make ECU list
     for device, config in devjson.items():
-        addr = getint(config.get("tx"))
-        dplist = config.get("dpList")
-        ecu = make_ecu(addr, dplist, "virtdata_" + shex(addr) + ".txt")
-        dicEcus[addr] = ecu
+        if device == 'common':
+            # Load common dids from local sub folder
+            dids_common_module = import_path(config.get("dpList"))
+            commondids = dids_common_module.dataIdentifiers["dids"]
+        else:
+            addr = getint(config.get("tx"))
+            dplist = config.get("dpList")
+            ecu = make_ecu(addr, dplist, "virtdata_" + shex(addr) + ".txt")
+            dicEcus[addr] = ecu
 elif(args.dev != None):
+    # Load common dids from local sub folder
+    dids_common_module = import_path("open3e_device_config/Open3Edatapoints.py")
+    commondids = dids_common_module.dataIdentifiers["dids"]
     # read device related dataidentifiers
     sdev = args.dev.capitalize()
     ecu = make_ecu(args.addr, sdev, "virtdata" + sdev + ".txt")
     dicEcus[args.addr] = ecu
-
 
 if(args.all):
     gendids = dict(commondids)

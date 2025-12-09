@@ -8,5 +8,8 @@
     "tx": "0x6a1",
     "dpList": "open3e_device_config/Open3Edatapoints_6a1.py",
     "prop": "EMCUMASTER"
+  },
+  "common": {
+    "dpList": "open3e_device_config/Open3Edatapoints.py"
   }
 }
