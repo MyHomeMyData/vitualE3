@@ -15,6 +15,13 @@
 """
 
 """
+version 1.2.0:
+    moved Open3Edatapoints.py to local sub folder
+    read common dids from Open3Edatapoints.py at run time
+    added data point 875
+    refer to issue 229 of project open3e: https://github.com/open3e/open3e/issues/299
+    added version info to epilog of help text
+
 version 1.1.0:
     added support for path to devices specified in devices.json
 
@@ -74,7 +81,11 @@ import os
 import sys
 import json
 
-import Open3Edatapoints
+# set version:
+version_str = '1.2.0 - opem3e-integration-testing'
+
+# Path to common data point definitions
+dids_common_path = 'open3e_device_config/Open3Edatapoints.py'
 
 import SimulationDataController
 from DictionaryWriteOverlay import DictionaryWriteOverlay
@@ -376,13 +387,20 @@ def receiveRemainWriteData(ecu, msg):
         bus.send(txmsg)
         comstate = 0
         
+def get_package_version_string():
+    package_version = version_str
+
+    return f'{package_version}'
+
 
 # ++++++++++++++++++++++++++
 # main
 # ++++++++++++++++++++++++++
 
+help_version_string = get_package_version_string()
+
 # command line arguments +++++++++++++++++++++++++++++++++++++++
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(epilog=f'virtualE3 {help_version_string}')
 parser.add_argument("-c", "--can", type=str, help="use can device, e.g. can0")
 parser.add_argument("-dev", "--dev", type=str, help="boiler type --dev vdens or --dev vcal or --dev vx3 or --dev vair")
 parser.add_argument("-old", "--old", action='store_true' , help="-old for not universal list")
@@ -392,6 +410,10 @@ parser.add_argument("-addr", "--addr", type=int, help="ECU address")
 parser.add_argument("-cnfg", "--config", type=str, help="json configuration file")
 parser.add_argument("-w", "--web", action="store_true", help="start a web server to access ecu simulation data")
 args = parser.parse_args()
+
+# Load common dids from local sub folder
+dids_common_module = import_path(dids_common_path)
+commondids = dids_common_module.dataIdentifiers["dids"]
 
 if(args.can != None):
     channel = args.can
@@ -426,7 +448,7 @@ elif(args.dev != None):
 
 
 if(args.all):
-    gendids = dict(Open3Edatapoints.dataIdentifiers["dids"])
+    gendids = dict(commondids)
     sims = {}
     dicEcus[0xfff] = [gendids,sims]
 
@@ -438,7 +460,7 @@ if(not args.old):
         dids = itml[0]
         sims = itml[1]
         # load general datapoints table
-        gendids = dict(Open3Edatapoints.dataIdentifiers["dids"])
+        gendids = dict(commondids)
         lstpops = []
         if(len(dids) > 0):
             # add dids to gendids if not contained
