@@ -14,8 +14,7 @@
   limitations under the License.
 """
 
-import Open3Ecodecs
-from Open3Ecodecs import *
+from open3e.Open3Ecodecs import *
 
 dataIdentifiers = {
     # HMU Führungsgerät Interner CAN-BUS: 1
@@ -61,15 +60,15 @@ dataIdentifiers = {
         365 : None,
         373 : None,
         377 : None,
-        381 : O3EInt8(4, "CentralHeatingPump"),
+        381 : O3EComplexType(4, "CentralHeatingPump", [O3EInt8(1, "Minimum"), O3EInt8(1, "Actual"), O3EInt8(1, "Maximum"), RawCodec(1, "Unknown")]),
         382 : None,
         386 : None,
         392 : None,
         396 : None,
-        401 : O3EInt16(5, "MixerOneCircuitPump", signed=True),
-        402 : O3EInt16(5, "MixerTwoCircuitPump", signed=True),
-        403 : O3EInt16(5, "MixerThreeCircuitPump", signed=True),
-        404 : O3EInt16(5, "MixerFourCircuitPump", signed=True),
+        401 : None,
+        402 : None,
+        403 : None,
+        404 : None,
         405 : None,
         406 : None,
         407 : None,
@@ -146,14 +145,14 @@ dataIdentifiers = {
         622 : None,
         623 : None,
         625 : None,
-        627 : RawCodec(12, "CentralHeatingOneCircuitName"),
-        628 : RawCodec(12, "CentralHeatingTwoCircuitName"),
-        629 : RawCodec(12, "CentralHeatingThreeCircuitName"),
-        630 : RawCodec(12, "CentralHeatingFourCircuitName"),
-        631 : RawCodec(12, "CentralHeatingFiveCircuitName"),
-        632 : RawCodec(12, "CentralHeatingSixCircuitName"),
-        633 : RawCodec(12, "CentralHeatingSevenCircuitName"),
-        634 : RawCodec(12, "CentralHeatingEightCircuitName"),
+        627 : O3EUtf8(12, "CentralHeatingOneCircuitName"),
+        628 : O3EUtf8(12, "CentralHeatingTwoCircuitName"),
+        629 : O3EUtf8(12, "CentralHeatingThreeCircuitName"),
+        630 : O3EUtf8(12, "CentralHeatingFourCircuitName"),
+        631 : O3EUtf8(12, "CentralHeatingFiveCircuitName"),
+        632 : O3EUtf8(12, "CentralHeatingSixCircuitName"),
+        633 : O3EUtf8(12, "CentralHeatingSevenCircuitName"),
+        634 : O3EUtf8(12, "CentralHeatingEightCircuitName"),
         645 : None,
         646 : None,
         647 : None,
